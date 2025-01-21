@@ -4,6 +4,7 @@
 #include <climits>
 #include <cstring>
 #include <cstdlib>
+#include <chrono>
 
 #pragma region Defaults
 
@@ -133,10 +134,16 @@ int main(int argc, char* argv[])
     b = random_numbers(b, args.n_items);
 
 #ifdef _OPENMP
+    std::cout << "OpenMP is enabled" << std::endl;
     omp_set_num_threads(args.n_threads);
 #endif // _OPENMP
 
+    auto start = std::chrono::high_resolution_clock::now();
     parallel_array_sum(a, b, c, args.n_items, args.chunk_size);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Summed arrays in: " << elapsed.count() << " seconds." << std::endl;
 
     output_results(args.max_output_rows, a, b, c, args.n_items);
 
