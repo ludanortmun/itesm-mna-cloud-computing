@@ -7,7 +7,7 @@
 
 #pragma region Defaults
 
-#define N_THREADS 11 
+#define N_THREADS 10 
 #define CHUNK_SIZE 100
 #define N_ITEMS 100000
 #define MAX_OUTPUT_ROWS 10
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
     int* b = new int[args.n_items];
     int* c = new int[args.n_items];
 
-    a = random_numbers(a, args.n_items);
+    a = triangular_numbers(a, args.n_items);
     b = random_numbers(b, args.n_items);
 
     omp_set_num_threads(args.n_threads);
