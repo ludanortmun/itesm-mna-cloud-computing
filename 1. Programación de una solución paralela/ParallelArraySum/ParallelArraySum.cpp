@@ -106,6 +106,14 @@ void output_results(int max_output_rows, int* a, int* b, int* c, int n_items) {
 }
 
 
+void parallel_array_sum(int* a, int* b, int* c, int n_items, int chunk_size) {
+    int i;
+    #pragma omp parallel for shared(a, b, c) private(i) schedule(static, chunk_size)
+    for (i = 0; i < n_items; i++) {
+        c[i] = a[i] + b[i];
+    }
+}
+
 int main(int argc, char* argv[])
 {
     Arguments args = parse_arguments(argc, argv);
@@ -124,13 +132,11 @@ int main(int argc, char* argv[])
     a = triangular_numbers(a, args.n_items);
     b = random_numbers(b, args.n_items);
 
+#ifdef _OPENMP
     omp_set_num_threads(args.n_threads);
+#endif // _OPENMP
 
-    int i;
-    #pragma omp parallel for shared(a, b, c) private(i) schedule(static, args.chunk_size)
-    for (i = 0; i < args.n_items; i++) {
-        c[i] = a[i] + b[i];
-    }
+    parallel_array_sum(a, b, c, args.n_items, args.chunk_size);
 
     output_results(args.max_output_rows, a, b, c, args.n_items);
 
