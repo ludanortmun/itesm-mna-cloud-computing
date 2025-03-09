@@ -9,11 +9,11 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'credentials.json'
 @click.command()
 @click.argument('text')
 @click.option('--target', '-t', default='es', help='Target language to translate the text')
-def translate_cmd(text, target):
+def translate_cmd(text, target_lang='es'):
     """
     This function uses the Google Cloud Translate API to translate a given text to a target language.
     :param text: The source text to translate. This is mandatory.
-    :param target: The target language to translate the text. This is optional and defaults to 'es' (Spanish).
+    :param target_lang: The target language to translate the text. This is optional and defaults to 'es' (Spanish).
     """
 
     # Creates a new API client to interact with GCP Translate API.
@@ -30,10 +30,10 @@ def translate_cmd(text, target):
     # Uses the Translate API to translate the input text to the target language (spanish by default).
     # The result is an object containing the original input text, the translated text and the detected source language.
     # The detected source language is the same as the one detected in the previous step.
-    translation_res = translate_client.translate(text, target_language=target)
+    translation_res = translate_client.translate(text, target_language=target_lang)
 
     # Display a user-friendly message with the translated text.
-    print(f"Traducción a '{target}': {translation_res['translatedText']}")
+    print(f"Traducción a '{target_lang}': {translation_res['translatedText']}")
 
 
 if __name__ == '__main__':
