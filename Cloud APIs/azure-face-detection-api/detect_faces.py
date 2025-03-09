@@ -20,7 +20,7 @@ def _detect_faces(image_content):
     """
     Detects faces in an image using Azure Face API.
     :param image_content: Binary content of the image.
-    :return: A set of coordinates for each of the faces in the image.
+    :return: A list of coordinates for each of the faces in the image.
     """
 
     # Create a FaceClient with the endpoint and key.
@@ -34,6 +34,11 @@ def _detect_faces(image_content):
             return_face_id=False,
             return_face_landmarks=False,
         )
+
+    # Prints the number of faces detected and the face rectangles as returned by the Face API.
+    print(f"Detected {len(result)} face(s) in the image.")
+    for idx, face in enumerate(result):
+        print(f"Face {idx + 1}: {face.face_rectangle}")
 
     # Azure Face API returns the face rectangles in the format (left, top, width, height).
     # However, to draw the rectangles on top of the image we want the format (left, top, right, bottom).
@@ -58,13 +63,21 @@ def _to_coords(face_rectangle):
 @click.command()
 @click.argument("image_path", type=click.Path(exists=True))
 def main(image_path):
+    """
+    Detects faces in an image using Azure Face API and draws rectangles around them.
+    The image is displayed with faces highlighted for visual verification.
+
+    :param image_path: The file path to the image in which faces need to be detected.
+    :type image_path: str
+    :return: None
+    """
+
     # Reads the contents of the image as binary.
     with open(image_path, "rb") as image_file:
         image_content = image_file.read()
 
     # Detects faces in the image using Azure Face API.
     detected_faces = _detect_faces(image_content)
-    print(f"Found {len(detected_faces)} face(s) in the image.")
 
     # Converts the image data into an Image object so we can draw rectangles on top of it.
     # To avoid loading the image file again, we can reuse the data from the image_content variable.
@@ -73,7 +86,7 @@ def main(image_path):
 
     # Draws a green rectangle around each of the detected faces.
     for face in detected_faces:
-        draw.rectangle(face, outline="green", width=5)
+        draw.rectangle(face, outline="green", width=3)
 
     # Shows the image with the rectangles around the faces.
     image.show()
